@@ -83,7 +83,7 @@ static double const DurationAnimation = 0.3f;
     
     self.menuViewContainer.backgroundColor = [UIColor clearColor];
     
-    if (self.leftMenuViewController) {
+    if (self.leftMenuViewController) {//如果菜单控制器存在，将其加入到菜单视图中
         [self addChildViewController:self.leftMenuViewController];
         self.leftMenuViewController.view.frame = self.view.bounds;
         self.leftMenuViewController.view.backgroundColor = [UIColor clearColor];
@@ -92,14 +92,14 @@ static double const DurationAnimation = 0.3f;
         [self.leftMenuViewController didMoveToParentViewController:self];
     }
  
-    NSAssert(self.contentViewController, @"内容视图不能为空");
+    NSAssert(self.contentViewController, @"内容视图不能为空");//内容视图控制器加入到内容视图中
     self.contentViewContainer.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     [self addChildViewController:self.contentViewController];
     self.contentViewController.view.frame = self.view.bounds;
     [self.contentViewContainer addSubview:self.contentViewController.view];
     [self.contentViewController didMoveToParentViewController:self];
     
-    
+    // 内容容器视图添加边缘手势
     self.edgePanGesture = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(panGestureRecognizer:)];
     self.edgePanGesture.delegate = self;
     [self.contentViewContainer addGestureRecognizer:self.edgePanGesture];
@@ -110,7 +110,6 @@ static double const DurationAnimation = 0.3f;
     [self.gestureRecognizerView addGestureRecognizer:tap];
 
     [self updateContentViewShadow];
-    
 }
 
 - (void)showViewController:(UIViewController *)viewController{
@@ -133,11 +132,13 @@ static double const DurationAnimation = 0.3f;
     }
     
 }
+
 - (void)hideMenu{
     if(!self.menuHidden){
         [self showMenu:NO];
     }
 }
+
 - (void)showMenu{
     if(self.menuHidden){
         [self showMenu:YES];
@@ -159,16 +160,15 @@ static double const DurationAnimation = 0.3f;
 }
 
 - (void)panGestureRecognizer:(UIScreenEdgePanGestureRecognizer *)recognizer{
-    
     CGPoint point = [recognizer translationInView:self.view];
     
     if (recognizer.state == UIGestureRecognizerStateBegan) {
         [self updateContentViewShadow];
     }else if(recognizer.state == UIGestureRecognizerStateChanged){
         CGFloat menuVisibleWidth = self.view.bounds.size.width-self.realContentViewVisibleWidth;
-        if (_scaleContent) {
+        if (_scaleContent) {// 缩放内容
             CGFloat delta = self.menuHidden ? point.x/menuVisibleWidth : (menuVisibleWidth+point.x)/menuVisibleWidth;
-            CGFloat scale = 1-(1-MinScaleContentView)*delta;
+            CGFloat scale = 1-(1-MinScaleContentView)*delta;//内容视图的缩放比例
             CGFloat menuScale = MinScaleMenuView + (1-MinScaleMenuView)*delta;
             if(self.menuHidden){
                 //以内容视图最小缩放为界限
@@ -178,9 +178,7 @@ static double const DurationAnimation = 0.3f;
                     self.contentViewScale = MinScaleContentView;
                     self.menuViewContainer.transform = CGAffineTransformMakeScale(1, 1);
                     self.menuViewContainer.transform = CGAffineTransformTranslate(self.menuViewContainer.transform, 0, 0);
-                    
                 }else{//大于最小界限又分大于等于1和小于1两种情况
-                   
                     if(scale < 1){//B
                         self.contentViewContainer.transform = CGAffineTransformMakeTranslation(point.x, 0);
                         self.contentViewContainer.transform = CGAffineTransformScale(self.contentViewContainer.transform,scale, scale);
@@ -194,11 +192,8 @@ static double const DurationAnimation = 0.3f;
                         self.menuViewContainer.transform = CGAffineTransformMakeScale(MinScaleMenuView, MinScaleMenuView);
                         self.menuViewContainer.transform = CGAffineTransformTranslate(self.menuViewContainer.transform, -MoveDistanceMenuView, 0);
                     }
-
                 }
-                
             }else{
-                
                 if(scale > 1){//D
                     self.contentViewContainer.transform = CGAffineTransformMakeTranslation(0, 0);
                     self.contentViewContainer.transform = CGAffineTransformScale(self.contentViewContainer.transform,1,1);
@@ -234,10 +229,10 @@ static double const DurationAnimation = 0.3f;
         }
         
     }else if(recognizer.state == UIGestureRecognizerStateEnded){
-
         [self showMenu: _scaleContent ? (self.contentViewScale < 1 - (1 - MinScaleContentView) / 2) : self.contentViewContainer.frame.origin.x > (self.view.bounds.size.width - self.realContentViewVisibleWidth) / 2];
     }
 }
+
 - (void)showMenu:(BOOL)show{
     if (_scaleContent) {
         NSTimeInterval duration  = show ? (self.contentViewScale-MinScaleContentView)/(1-MinScaleContentView)*DurationAnimation : (1 - (self.contentViewScale-MinScaleContentView)/(1-MinScaleContentView))*DurationAnimation;
@@ -289,9 +284,8 @@ static double const DurationAnimation = 0.3f;
     layer.shadowRadius = self.contentViewShadowRadius;
 }
 
-#pragma gesture delegate
+#pragma gesture delegate 边缘手势
 - (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer{
-
     if(self.contentViewController.childViewControllers.count < 2){//这样只有在根视图控制器上起作用
         CGPoint point = [gestureRecognizer locationInView:gestureRecognizer.view];
         if(self.menuHidden){
@@ -303,14 +297,15 @@ static double const DurationAnimation = 0.3f;
         }
     }
     return NO;
-
 }
+
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldBeRequiredToFailByGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer{
     if(gestureRecognizer == self.edgePanGesture){
         return YES;
     }
     return  NO;
 }
+
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
