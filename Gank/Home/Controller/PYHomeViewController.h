@@ -11,7 +11,4 @@
 
 @interface PYHomeViewController : UIViewController <YQContentViewControllerDelegate>
 
-
-@property (nonatomic, weak) YQSlideMenuController *sideMenuController;
-
 @end

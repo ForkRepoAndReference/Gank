@@ -21,6 +21,7 @@
 #import <PYSearch/PYSearch.h>
 #import <PYSearch/PYSearchConst.h>
 #import "PYSearchResultViewController.h"
+#import "UIViewController+YQSlideMenu.h"
 
 #define PYCOLORPolRandomColor self.colorPol[arc4random_uniform((uint32_t)self.colorPol.count)] // 随机选取颜色池中的颜色
 
@@ -95,7 +96,7 @@
 }
 
 - (void)showMenu {
-    [self.sideMenuController showMenu];
+    [[self slideMenuController] showMenu];
 }
 
 - (void)search
@@ -252,7 +253,7 @@
         [pageTitleView touchEnd:index];
         // 设置控制器背景色
         self.view.backgroundColor = self.colorPol[index];
-        self.sideMenuController.view.backgroundColor = self.view.backgroundColor;
+        [self slideMenuController].view.backgroundColor = self.view.backgroundColor;
         // 设置标题
         ((UILabel *)(self.navigationItem.titleView)).text = self.pageTitles[index];
     }

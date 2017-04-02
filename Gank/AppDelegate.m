@@ -54,7 +54,6 @@
     UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:contentViewController];
     UIViewController *leftMenuViewController = [[PYMenuViewController alloc] init];
     YQSlideMenuController *sideMenuController = [[YQSlideMenuController alloc] initWithContentViewController:navigationController leftMenuViewController:leftMenuViewController];
-    contentViewController.sideMenuController = sideMenuController;
     sideMenuController.delegate = contentViewController;
     self.window.rootViewController = sideMenuController;
 }
